@@ -1,4 +1,5 @@
 use std::process::Command;
+use std::{thread, time};
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -7,7 +8,7 @@ fn main() {
     let mut itunes = itunes();
 
     if command == "open" {
-            itunes
+        itunes
             .output()
             .expect("failed to execute command");
     }
@@ -110,16 +111,17 @@ fn is_running() -> bool {
 fn itunes() -> Command {
     let mut command = Command::new("osascript");
 
-    if !is_running() {
-        println!("iTunes not running, launching...");
-
-        // TODO: instead of delaying the action execution, check if iTunes is ready
-        command
-            .arg("-e")
-            .arg("tell application \"iTunes\" to launch")
-            .arg("-e")
-            .arg("delay 5");
+    while !is_running() {
+        let ten_millis = time::Duration::from_millis(1000);
+        thread::sleep(ten_millis);
     }
+
+    println!("iTunes not running, launching...");
+
+    command
+        .arg("-e")
+        .arg("tell application \"iTunes\" to launch")
+        .arg("-e");
 
     command
 }
