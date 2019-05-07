@@ -116,8 +116,6 @@ fn itunes() -> Command {
         thread::sleep(ten_millis);
     }
 
-    println!("iTunes not running, launching...");
-
     command
         .arg("-e")
         .arg("tell application \"iTunes\" to launch")
