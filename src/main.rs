@@ -111,15 +111,14 @@ fn is_running() -> bool {
 fn itunes() -> Command {
     let mut command = Command::new("osascript");
 
+    command
+        .arg("-e")
+        .arg("tell application \"iTunes\" to launch");
+
     while !is_running() {
         let ten_millis = time::Duration::from_millis(1000);
         thread::sleep(ten_millis);
     }
-
-    command
-        .arg("-e")
-        .arg("tell application \"iTunes\" to launch")
-        .arg("-e");
 
     command
 }
