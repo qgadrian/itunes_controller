@@ -47,6 +47,15 @@ fn main() {
     else if command == "previous" {
         execute(&mut itunes, "play previous track")
     }
+    else if command == "song" {
+        if args.len() == 3 {
+            let option = &args[2];
+
+            if option == "add-to-library" {
+                execute(&mut itunes, "duplicate current track to source \"Library\"")
+            }
+        }
+    }
     else if command == "love" {
         if args.len() > 2 {
             let target = &args[2];
