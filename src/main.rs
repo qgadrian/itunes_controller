@@ -1,105 +1,91 @@
+#[macro_use]
+extern crate clap;
+use clap::App;
+
 use std::process::Command;
 use std::{thread, time};
 
 fn main() {
-    let args: Vec<String> = std::env::args().collect();
+    let yaml = load_yaml!("cli.yml");
+    let matches = App::from_yaml(yaml).get_matches();
 
-    let command = &args[1];
     let mut itunes = itunes();
 
-    if command == "open" {
-        itunes
-            .output()
-            .expect("failed to execute command");
+    if matches.is_present("play") {
+        execute(&mut itunes, "play")
     }
-    else if command == "play" {
-        if args.len() > 3 {
-            let kind = &args[2];
 
-            if kind == "playlist" {
-                let target = &args[3];
-                let action: &str = &&format!("play playlist \"{}\"", target);
-                execute(&mut itunes, action)
-            } else if kind == "track" || kind == "song" {
-                let target = &args[3];
-                let action: &str = &&format!("play track \"{}\"", target);
-                execute(&mut itunes, action)
-            }
-        } else {
-            execute(&mut itunes, command)
-        }
+    if matches.is_present("pause") {
+        execute(&mut itunes, "pause")
     }
-    else if command == "pause" {
-        execute(&mut itunes, command)
-    }
-    else if command == "stop" {
-        execute(&mut itunes, command)
-    }
-    else if command == "next" {
+
+    if matches.is_present("next") {
         execute(&mut itunes, "play next track")
     }
-    else if command == "previous" {
-        execute(&mut itunes, "play previous track")
-    }
-    else if command == "next" {
-        execute(&mut itunes,"play next track")
-    }
-    else if command == "previous" {
-        execute(&mut itunes, "play previous track")
-    }
-    else if command == "song" {
-        if args.len() == 3 {
-            let option = &args[2];
 
-            if option == "add-to-library" {
-                execute(&mut itunes, "duplicate current track to source \"Library\"")
+    if matches.is_present("previous") {
+        execute(&mut itunes, "play previous track")
+    }
+
+    if let Some(matches) = matches.subcommand_matches("playlist") {
+        if matches.is_present("list") {
+            let action = "get name of playlists";
+            let execute = format!("tell application \"iTunes\" to {}", action);
+
+            let output = itunes
+                .arg("-e")
+                .arg(execute)
+                .output()
+                .expect("failed to execute process");
+
+            let output = String::from_utf8_lossy(&output.stdout);
+
+            let playlists: Vec<&str> =
+                output
+                .split(",")
+                .collect();
+
+            for playlist in &playlists {
+                println!("{}", playlist);
             }
         }
     }
-    else if command == "love" {
-        if args.len() > 2 {
-            let target = &args[2];
-            if target == "clear" {
-                execute(&mut itunes, "set loved of current track to false")
-            }
+
+    if let Some(matches) = matches.subcommand_matches("play") {
+        if matches.is_present("song") {
+            let target = matches.value_of("song").unwrap();
+            let action: &str = &&format!("play track \"{}\"", target);
+            execute(&mut itunes, action)
+        } else if matches.is_present("playlist") {
+            let target = matches.value_of("song").unwrap();
+            let action: &str = &&format!("play playlist \"{}\"", target);
+            execute(&mut itunes, action)
         } else {
+            execute(&mut itunes, "play")
+        }
+    }
+
+
+    if matches.is_present("stop") {
+        execute(&mut itunes, "stop")
+    }
+
+    if let Some(matches) = matches.subcommand_matches("flag") {
+        if matches.is_present("love") {
             execute(&mut itunes, "set loved of current track to true")
-        }
-    }
-    else if command == "dislike" {
-        if args.len() > 2 {
-            let target = &args[2];
-            if target == "clear" {
-                execute(&mut itunes, "set disliked of current track to false")
-            }
-        } else {
+        } else if matches.is_present("dislike") {
             execute(&mut itunes, "set disliked of current track to true")
-        }
-
-    }
-    else if command == "playlists" {
-        let action = "get name of playlists";
-        let execute = format!("tell application \"iTunes\" to {}", action);
-
-        let output = itunes
-            .arg("-e")
-            .arg(execute)
-            .output()
-            .expect("failed to execute process");
-
-        let output = String::from_utf8_lossy(&output.stdout);
-
-        let playlists: Vec<&str> =
-            output
-            .split(",")
-            .collect();
-
-        for playlist in &playlists {
-            println!("{}", playlist);
+        } else if matches.is_present("clear") {
+            execute(&mut itunes, "set loved of current track to false");
+            execute(&mut itunes, "set disliked of current track to false")
         }
     }
-    else {
-        println!("Unknown action: {}", command)
+
+
+    if let Some(matches) = matches.subcommand_matches("add-to") {
+        if matches.is_present("library") {
+            execute(&mut itunes, "duplicate current track to source \"Library\"")
+        }
     }
 }
 

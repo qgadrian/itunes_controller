@@ -1,0 +1,111 @@
+name: itunes
+version: "0.1.0"
+author: Adrian Quintas <me@qgadrian.com>
+about: Provides commands to control iTunes using the terminal
+args:
+    - play:
+        long: play
+        short: p
+        multiple: false
+        help: Starts playing the play queue, if any
+        conflicts_with:
+          - pause
+          - playpause
+    - pause:
+        long: pause
+        short: x
+        multiple: false
+        help: Stops the current reproduction, if any
+        conflicts_with:
+          - play
+          - playpause
+    - play-pause:
+        long: playpause
+        short: t
+        multiple: false
+        help: Toggles the play state
+        conflicts_with:
+          - play
+          - pause
+    - next:
+        long: next
+        short: n
+        multiple: false
+        help: Plays next song in the queue
+        conflicts_with:
+          - previous
+    - previous:
+        long: previous
+        short: r
+        multiple: false
+        help: Plays the previous song in the queue
+        conflicts_with:
+          - next
+subcommands:
+    - play:
+        about: Play something in iTunes
+        version: "0.1.0"
+        author: Adrian Quintas <me@qgadrian.com>
+        args:
+            - playlist:
+                long: playlist
+                short: l
+                help: play the given playlist
+                takes_value: true
+            - song:
+                long: song
+                short: s
+                help: play the given song
+                takes_value: true
+    - pause:
+        about: Pauses the player
+        version: "0.1.0"
+        author: Adrian Quintas <me@qgadrian.com>
+    - stop:
+        about: Stops the player
+        version: "0.1.0"
+        author: Adrian Quintas <me@qgadrian.com>
+    - playlist:
+        about: Playlist actions
+        version: "0.1.0"
+        author: Adrian Quintas <me@qgadrian.com>
+        args:
+            - list:
+                long: list
+                short: l
+                help: returns the availalbe playlists
+    - add-to:
+        about: Adds the current song to either a playlist or library
+        version: "0.1.0"
+        author: Adrian Quintas <me@qgadrian.com>
+        args:
+            - playlist:
+                long: playlist
+                short: pl
+                help: adds the current song to the given library
+                takes_value: true
+            - library:
+                long: library
+                short: l
+                help: adds the current song to the library
+                takes_value: false
+    - flag:
+        about: Flags the current song
+        version: "0.1.0"
+        author: Adrian Quintas <me@qgadrian.com>
+        args:
+            - love:
+                long: love
+                short: l
+                help: sets the current song as loved
+                takes_value: false
+            - clear:
+                long: clear
+                short: c
+                help: clears the flags for the current song
+                takes_value: false
+            - dislike:
+                long: dislike
+                short: d
+                help: sets the current song as dislike
+                takes_value: false
