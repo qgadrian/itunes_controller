@@ -12,46 +12,23 @@ Install [Rust](https://www.rust-lang.org/tools/install).
 
 Compile the project with `cargo build --release`.
 
-## Actions
+## Usage
 
-If iTunes it's not open, any action will start the application first.
+If iTunes it's not open, any action will start the application first. To see the
+help with all the available options run `itunes help`.
 
-### Play/Pause
+## Examples
 
-`itunes play`
+### Player
 
-`itunes pause`
+Basic player controls supported: `play`, `pause`, `playpause`, `stop`, `next`
+and `previous`.
 
-### Next/previous track
+Either songs or playlists can be played, for example `itunes play song "We will
+rock you"`.
 
-`itunes next`
+### Library
 
-`itunes previous`
-
-### Play a song
-
-> To avoid confusions, you can use either `song` or `track` with this command.
-
-`itunes play song "We will rock you"`
-
-`itunes play track "We will rock you"`
-
-### Play a playlist
-
-`itunes play playlist "Classical music"`
-
-### Love current song
-
-`itunes love`
-
-### Remove love current song
-
-`itunes love clear`
-
-### Dislike current song
-
-`itunes dislike`
-
-### Remove dislike current song
-
-`itunes dislike clear`
+The current song can be added to the library with `itunes add-to library`.
+It can be marked as loved with `itunes flag love`, or dislike it with `itunes
+flag dislike`.
