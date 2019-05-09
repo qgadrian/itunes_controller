@@ -2,45 +2,6 @@ name: itunes
 version: "0.1.0"
 author: Adrian Quintas <me@qgadrian.com>
 about: Provides commands to control iTunes using the terminal
-args:
-    - play:
-        long: play
-        short: p
-        multiple: false
-        help: Starts playing the play queue, if any
-        conflicts_with:
-          - pause
-          - playpause
-    - pause:
-        long: pause
-        short: x
-        multiple: false
-        help: Stops the current reproduction, if any
-        conflicts_with:
-          - play
-          - playpause
-    - play-pause:
-        long: playpause
-        short: t
-        multiple: false
-        help: Toggles the play state
-        conflicts_with:
-          - play
-          - pause
-    - next:
-        long: next
-        short: n
-        multiple: false
-        help: Plays next song in the queue
-        conflicts_with:
-          - previous
-    - previous:
-        long: previous
-        short: r
-        multiple: false
-        help: Plays the previous song in the queue
-        conflicts_with:
-          - next
 subcommands:
     - play:
         about: Play something in iTunes
@@ -59,6 +20,10 @@ subcommands:
                 takes_value: true
     - pause:
         about: Pauses the player
+        version: "0.1.0"
+        author: Adrian Quintas <me@qgadrian.com>
+    - playpause:
+        about: Toggles the play state
         version: "0.1.0"
         author: Adrian Quintas <me@qgadrian.com>
     - stop:

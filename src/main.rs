@@ -27,6 +27,10 @@ fn main() {
         execute(&mut itunes, "play previous track")
     }
 
+    if matches.is_present("stop") {
+        execute(&mut itunes, "stop")
+    }
+
     if let Some(matches) = matches.subcommand_matches("playlist") {
         if matches.is_present("list") {
             let action = "get name of playlists";
@@ -40,10 +44,7 @@ fn main() {
 
             let output = String::from_utf8_lossy(&output.stdout);
 
-            let playlists: Vec<&str> =
-                output
-                .split(",")
-                .collect();
+            let playlists: Vec<&str> = output.split(",").collect();
 
             for playlist in &playlists {
                 println!("{}", playlist);
@@ -65,11 +66,6 @@ fn main() {
         }
     }
 
-
-    if matches.is_present("stop") {
-        execute(&mut itunes, "stop")
-    }
-
     if let Some(matches) = matches.subcommand_matches("flag") {
         if matches.is_present("love") {
             execute(&mut itunes, "set loved of current track to true")
@@ -81,7 +77,6 @@ fn main() {
         }
     }
 
-
     if let Some(matches) = matches.subcommand_matches("add-to") {
         if matches.is_present("library") {
             execute(&mut itunes, "duplicate current track to source \"Library\"")
@@ -90,8 +85,7 @@ fn main() {
 }
 
 fn is_running() -> bool {
-    let output =
-        Command::new("osascript")
+    let output = Command::new("osascript")
         .arg("-e")
         .arg("tell application \"System Events\" to (name of processes) contains \"iTunes\"")
         .output()
