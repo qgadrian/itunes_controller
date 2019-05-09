@@ -2,33 +2,36 @@
 extern crate clap;
 use clap::App;
 
-use std::process::Command;
-use std::{thread, time};
+mod itunes;
 
 fn main() {
     let yaml = load_yaml!("cli.yml");
     let matches = App::from_yaml(yaml).get_matches();
 
-    let mut itunes = itunes();
+    let mut itunes_instance = itunes::client::new();
 
     if matches.is_present("play") {
-        execute(&mut itunes, "play")
+        itunes::player::play();
     }
 
     if matches.is_present("pause") {
-        execute(&mut itunes, "pause")
+        itunes::player::pause();
     }
 
-    if matches.is_present("next") {
-        execute(&mut itunes, "play next track")
-    }
-
-    if matches.is_present("previous") {
-        execute(&mut itunes, "play previous track")
+    if matches.is_present("playpause") {
+        itunes::player::playpause();
     }
 
     if matches.is_present("stop") {
-        execute(&mut itunes, "stop")
+        itunes::player::stop();
+    }
+
+    if matches.is_present("next") {
+        itunes::player::next();
+    }
+
+    if matches.is_present("previous") {
+        itunes::player::previous();
     }
 
     if let Some(matches) = matches.subcommand_matches("playlist") {
@@ -36,7 +39,7 @@ fn main() {
             let action = "get name of playlists";
             let execute = format!("tell application \"iTunes\" to {}", action);
 
-            let output = itunes
+            let output = itunes_instance
                 .arg("-e")
                 .arg(execute)
                 .output()
@@ -56,69 +59,29 @@ fn main() {
         if matches.is_present("song") {
             let target = matches.value_of("song").unwrap();
             let action: &str = &&format!("play track \"{}\"", target);
-            execute(&mut itunes, action)
+            itunes::client::execute(&mut itunes_instance, action)
         } else if matches.is_present("playlist") {
             let target = matches.value_of("song").unwrap();
             let action: &str = &&format!("play playlist \"{}\"", target);
-            execute(&mut itunes, action)
+            itunes::client::execute(&mut itunes_instance, action)
         } else {
-            execute(&mut itunes, "play")
+            itunes::client::execute(&mut itunes_instance, "play")
         }
     }
 
     if let Some(matches) = matches.subcommand_matches("flag") {
         if matches.is_present("love") {
-            execute(&mut itunes, "set loved of current track to true")
+            itunes::library::love_current_song();
         } else if matches.is_present("dislike") {
-            execute(&mut itunes, "set disliked of current track to true")
+            itunes::library::dislike_current_song();
         } else if matches.is_present("clear") {
-            execute(&mut itunes, "set loved of current track to false");
-            execute(&mut itunes, "set disliked of current track to false")
+            itunes::library::clear_flags();
         }
     }
 
     if let Some(matches) = matches.subcommand_matches("add-to") {
         if matches.is_present("library") {
-            execute(&mut itunes, "duplicate current track to source \"Library\"")
+            itunes::library::add_to_library();
         }
     }
-}
-
-fn is_running() -> bool {
-    let output = Command::new("osascript")
-        .arg("-e")
-        .arg("tell application \"System Events\" to (name of processes) contains \"iTunes\"")
-        .output()
-        .expect("failed to execute process");
-
-    let is_running = String::from_utf8_lossy(&output.stdout);
-
-    // output string seems to be trimmed since it contains a new line character at the end
-    return is_running.trim() == "true";
-}
-
-fn itunes() -> Command {
-    let mut command = Command::new("osascript");
-
-    command
-        .arg("-e")
-        .arg("tell application \"iTunes\" to launch");
-
-    while !is_running() {
-        let ten_millis = time::Duration::from_millis(1000);
-        thread::sleep(ten_millis);
-    }
-
-    command
-}
-
-fn execute(command: &mut Command, action: &str) {
-    let execute = format!("tell application \"iTunes\" to {}", action);
-
-    command
-        .arg("-e")
-        .arg(execute)
-        .stdout(std::process::Stdio::inherit())
-        .output()
-        .expect("failed to execute process");
 }
