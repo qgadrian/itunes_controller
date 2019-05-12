@@ -25,6 +25,5 @@ pub fn previous() {
 }
 
 fn do_action(action: &str) {
-    let mut itunes = itunes::client::new();
-    itunes::client::execute(&mut itunes, action)
+    itunes::client::execute(action)
 }

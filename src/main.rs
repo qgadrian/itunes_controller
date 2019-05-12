@@ -8,8 +8,6 @@ fn main() {
     let yaml = load_yaml!("cli.yml");
     let matches = App::from_yaml(yaml).get_matches();
 
-    let mut itunes_instance = itunes::client::new();
-
     if matches.is_present("play") {
         itunes::player::play();
     }
@@ -39,7 +37,7 @@ fn main() {
             let action = "get name of playlists";
             let execute = format!("tell application \"iTunes\" to {}", action);
 
-            let output = itunes_instance
+            let output = Command::new("osascript")
                 .arg("-e")
                 .arg(execute)
                 .output()
@@ -57,15 +55,13 @@ fn main() {
 
     if let Some(matches) = matches.subcommand_matches("play") {
         if matches.is_present("song") {
-            let target = matches.value_of("song").unwrap();
-            let action: &str = &&format!("play track \"{}\"", target);
-            itunes::client::execute(&mut itunes_instance, action)
+            let song = matches.value_of("song").unwrap();
+            itunes::player::play_song(song);
         } else if matches.is_present("playlist") {
-            let target = matches.value_of("song").unwrap();
-            let action: &str = &&format!("play playlist \"{}\"", target);
-            itunes::client::execute(&mut itunes_instance, action)
+            let playlist = matches.value_of("playlist").unwrap();
+            itunes::player::play_playlist(playlist);
         } else {
-            itunes::client::execute(&mut itunes_instance, "play")
+            itunes::client::execute("play")
         }
     }
 

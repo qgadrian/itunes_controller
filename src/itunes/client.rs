@@ -1,30 +1,30 @@
 use std::process::Command;
 use std::{thread, time};
 
-pub fn new() -> Command {
-    let mut command = Command::new("osascript");
+pub fn execute(action: &str) {
+    ensure_is_running();
 
-    command
+    let action_to_execute = format!("tell application \"iTunes\" to {}", action);
+
+    Command::new("osascript")
         .arg("-e")
-        .arg("tell application \"iTunes\" to launch");
+        .arg(action_to_execute)
+        .stdout(std::process::Stdio::inherit())
+        .output()
+        .expect("failed to execute process");
+}
+
+fn ensure_is_running() {
+    Command::new("osascript")
+        .arg("-e")
+        .arg("tell application \"iTunes\" to launch")
+        .output()
+        .expect("failed to start iTunes");
 
     while !is_running() {
         let ten_millis = time::Duration::from_millis(1000);
         thread::sleep(ten_millis);
     }
-
-    command
-}
-
-pub fn execute(command: &mut Command, action: &str) {
-    let execute = format!("tell application \"iTunes\" to {}", action);
-
-    command
-        .arg("-e")
-        .arg(execute)
-        .stdout(std::process::Stdio::inherit())
-        .output()
-        .expect("failed to execute process");
 }
 
 fn is_running() -> bool {
