@@ -37,5 +37,5 @@ pub fn play_playlist(playlist: &str) {
 }
 
 fn do_action(action: &str) {
-    itunes::client::execute(action)
+    itunes::client::execute(action);
 }

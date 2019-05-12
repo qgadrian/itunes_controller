@@ -34,22 +34,7 @@ fn main() {
 
     if let Some(matches) = matches.subcommand_matches("playlist") {
         if matches.is_present("list") {
-            let action = "get name of playlists";
-            let execute = format!("tell application \"iTunes\" to {}", action);
-
-            let output = Command::new("osascript")
-                .arg("-e")
-                .arg(execute)
-                .output()
-                .expect("failed to execute process");
-
-            let output = String::from_utf8_lossy(&output.stdout);
-
-            let playlists: Vec<&str> = output.split(",").collect();
-
-            for playlist in &playlists {
-                println!("{}", playlist);
-            }
+            itunes::library::list_playlists();
         }
     }
 
@@ -61,7 +46,7 @@ fn main() {
             let playlist = matches.value_of("playlist").unwrap();
             itunes::player::play_playlist(playlist);
         } else {
-            itunes::client::execute("play")
+            itunes::client::execute("play");
         }
     }
 

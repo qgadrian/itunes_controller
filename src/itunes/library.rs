@@ -1,5 +1,17 @@
 use crate::itunes;
 
+pub fn list_playlists() {
+    let output = itunes::client::execute("tell application \"iTunes\" to get name of playlists");
+
+    let output = String::from_utf8_lossy(&output.stdout);
+
+    let playlists: Vec<&str> = output.split(",").collect();
+
+    for playlist in &playlists {
+        println!("{}", playlist);
+    }
+}
+
 pub fn add_to_library() {
     itunes::client::execute("duplicate current track to source \"Library\"");
 }

@@ -1,7 +1,7 @@
 use std::process::Command;
 use std::{thread, time};
 
-pub fn execute(action: &str) {
+pub fn execute(action: &str) -> std::process::Output {
     ensure_is_running();
 
     let action_to_execute = format!("tell application \"iTunes\" to {}", action);
@@ -11,7 +11,7 @@ pub fn execute(action: &str) {
         .arg(action_to_execute)
         .stdout(std::process::Stdio::inherit())
         .output()
-        .expect("failed to execute process");
+        .expect("failed to execute process")
 }
 
 fn ensure_is_running() {
