@@ -22,6 +22,14 @@ subcommands:
         about: Pauses the player
         version: "0.1.0"
         author: Adrian Quintas <me@qgadrian.com>
+    - next:
+        about: Plays next song
+        version: "0.1.0"
+        author: Adrian Quintas <me@qgadrian.com>
+    - previous:
+        about: Plays previous song
+        version: "0.1.0"
+        author: Adrian Quintas <me@qgadrian.com>
     - playpause:
         about: Toggles the play state
         version: "0.1.0"
